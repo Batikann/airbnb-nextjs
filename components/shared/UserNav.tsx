@@ -19,7 +19,7 @@ const UserNav = async () => {
   const user = await getUser()
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex items-center  gap-x-3 ">
+      <DropdownMenuTrigger className="flex items-center  lg:gap-x-3 ">
         <MenuIcon className="w-6 h-6 lg:w-5 lg:h-5" />
         {user?.picture ? (
           <div className="rounded-full">
