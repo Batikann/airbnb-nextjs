@@ -1,3 +1,5 @@
+import countries from 'world-countries'
+
 interface iAppProps {
   name: string
   title: string
@@ -112,3 +114,21 @@ export const categoryItems: iAppProps[] = [
       'https://a0.muscache.com/pictures/957f8022-dfd7-426c-99fd-77ed792f6d7a.jpg',
   },
 ]
+
+const countriesFormatted = countries.map((item) => ({
+  value: item.cca2,
+  label: item.name.common,
+  flag: item.flag,
+  latLang: item.latlng,
+  region: item.region,
+}))
+
+export const useCountries = () => {
+  const getAllCountries = () => countriesFormatted
+
+  const getCountryByValue = (value: string) => {
+    return countriesFormatted.find((item) => item.value === value)
+  }
+
+  return { getAllCountries, getCountryByValue }
+}
