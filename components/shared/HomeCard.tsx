@@ -4,12 +4,20 @@ import Link from 'next/link'
 // import { AddToFavoriteButton, DeleteFromFavoriteButton } from './SubmitButtons'
 // import { DeleteFromFavorite, addToFavorite } from '../actions'
 import { useCountries } from '@/constants'
+import AddFavoriteButton from './AddFavoriteButton'
+import { addToFavorite, deleteToFavorite } from '@/app/action'
+import DeleteFavoriteButton from './DeleteFavoriteButton'
 
 interface iAppProps {
   imagePath: string
   description: string
   location: string
   price: number
+  userId: string | undefined
+  isInFavoriteList: boolean
+  favoriteId: string
+  homeId: string
+  pathName: string
 }
 
 export function ListingCard({
@@ -17,6 +25,11 @@ export function ListingCard({
   imagePath,
   location,
   price,
+  userId,
+  favoriteId,
+  isInFavoriteList,
+  homeId,
+  pathName,
 }: iAppProps) {
   const { getCountryByValue } = useCountries()
   const country = getCountryByValue(location)
@@ -30,26 +43,26 @@ export function ListingCard({
           fill
           className="rounded-lg h-full object-cover"
         />
-        {/* 
+
         {userId && (
           <div className="z-10 absolute top-2 right-2">
             {isInFavoriteList ? (
-              <form action={DeleteFromFavorite}>
-                <input type="hidden" name="favoriteId" value={favoriteId} />
+              <form action={deleteToFavorite}>
                 <input type="hidden" name="userId" value={userId} />
+                <input type="hidden" name="favoriteId" value={favoriteId} />
                 <input type="hidden" name="pathName" value={pathName} />
-                <DeleteFromFavoriteButton />
+                <DeleteFavoriteButton />
               </form>
             ) : (
               <form action={addToFavorite}>
-                <input type="hidden" name="homeId" value={homeId} />
                 <input type="hidden" name="userId" value={userId} />
+                <input type="hidden" name="homeId" value={homeId} />
                 <input type="hidden" name="pathName" value={pathName} />
-                <AddToFavoriteButton />
+                <AddFavoriteButton />
               </form>
             )}
           </div>
-        )} */}
+        )}
       </div>
 
       <Link href={`/`} className="mt-2">

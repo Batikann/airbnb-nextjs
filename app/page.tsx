@@ -3,12 +3,14 @@ import MapFilter from '@/components/shared/MapFilter'
 import NoItems from '@/components/shared/NoItems'
 import SkeletonCard from '@/components/shared/SkeletonCard'
 import prisma from '@/lib/db'
-import Link from 'next/link'
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import { Suspense } from 'react'
 
 async function getData({
   searchParams,
+  userId,
 }: {
+  userId: string | undefined
   searchParams?: { filter?: string }
 }) {
   const data = await prisma.home.findMany({
@@ -24,6 +26,11 @@ async function getData({
       price: true,
       description: true,
       country: true,
+      Favorite: {
+        where: {
+          userId: userId ?? undefined,
+        },
+      },
     },
   })
 
@@ -51,11 +58,18 @@ async function ShowItems({
 }: {
   searchParams?: { filter?: string }
 }) {
-  const data = await getData({ searchParams: searchParams })
+  const { getUser } = getKindeServerSession()
+  const user = await getUser()
+  const data = await getData({ searchParams: searchParams, userId: user?.id })
   return (
     <>
       {data.length === 0 ? (
-        <NoItems />
+        <NoItems
+          title={'Soory no listing found for this category...'}
+          description={
+            'Please check other category or create your own listing!'
+          }
+        />
       ) : (
         <div className="grid lg:grid-cols-4 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-8 ">
           {data.map((item) => (
@@ -65,6 +79,11 @@ async function ShowItems({
               description={item.description as string}
               location={item.country as string}
               price={item.price as number}
+              userId={user?.id}
+              favoriteId={item.Favorite[0]?.id}
+              isInFavoriteList={item.Favorite.length > 0 ? true : false}
+              homeId={item.id}
+              pathName="/"
             />
           ))}
         </div>
