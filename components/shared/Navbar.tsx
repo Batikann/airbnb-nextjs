@@ -3,6 +3,7 @@ import DesktopLogo from '../../public/airbnb-desktop.png'
 import MobileLogo from '../../public/airbnb-mobile.webp'
 import Image from 'next/image'
 import UserNav from './UserNav'
+import { SearchModalCompnent } from './SearchComponent'
 
 const Navbar = () => {
   return (
@@ -21,6 +22,7 @@ const Navbar = () => {
             className="w-12 block lg:hidden"
           />
         </Link>
+        <SearchModalCompnent />
         <div className="rounded-full border px-5 py-2">
           <UserNav />
         </div>
