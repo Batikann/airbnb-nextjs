@@ -1,10 +1,15 @@
+import { createReservation } from '@/app/action'
 import CategoryShowcase from '@/components/shared/CategoryShowcase'
 import HomeMap from '@/components/shared/HomeMap'
+import { ReservationSubmitButton } from '@/components/shared/ReservationSubmitButton'
 import SelectCalender from '@/components/shared/SelectCalender'
+import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useCountries } from '@/constants'
 import prisma from '@/lib/db'
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import Image from 'next/image'
+import Link from 'next/link'
 
 async function getData(homeId: string) {
   const data = await prisma.home.findFirst({
@@ -22,6 +27,11 @@ async function getData(homeId: string) {
       createdAT: true,
       price: true,
       country: true,
+      Reservations: {
+        where: {
+          homeId: homeId,
+        },
+      },
       User: {
         select: {
           profileImage: true,
@@ -39,6 +49,8 @@ export default async function HomeRoute({
 }: {
   params: { id: string }
 }) {
+  const { getUser } = getKindeServerSession()
+  const user = await getUser()
   const data = await getData(params.id)
   const { getCountryByValue } = useCountries()
   const country = await getCountryByValue(data?.country as string)
@@ -89,7 +101,21 @@ export default async function HomeRoute({
           <HomeMap locationValue={country?.value as string} />
         </div>
 
-        <SelectCalender />
+        <form action={createReservation}>
+          <input type="hidden" name="homeId" value={params.id} />
+          <input type="hidden" name="userId" value={user?.id} />
+          <SelectCalender reservation={data?.Reservations} />
+
+          {user?.id ? (
+            <div>
+              <ReservationSubmitButton />
+            </div>
+          ) : (
+            <Button className="w-full" asChild>
+              <Link href="/api/auth/login">Make a Reservations</Link>
+            </Button>
+          )}
+        </form>
       </div>
     </div>
   )
